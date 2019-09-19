@@ -5,16 +5,17 @@ namespace KSP_PostProcessing.Operators
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class FlightOperator : MonoBehaviour
     {
-        byte state = 0;
+        byte state = 0xff;
         // 0 = flight
         // 1 = EVA
         // 2 = IVA
         // 3 = Map
-        
+        // 0xff = Unknown, set to flight
+
         private void Start()
         {
             mainCam = Camera.main.gameObject.AddOrGetComponent<PostProcessingBehaviour>();
-            scaledCam = GameObject.Find("Camera ScaledSpace").AddOrGetComponent<PostProcessingBehaviour>(); ;
+            scaledCam = GameObject.Find("Camera ScaledSpace").AddOrGetComponent<PostProcessingBehaviour>();
             ivaCam = InternalCamera.Instance;
         }
 

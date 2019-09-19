@@ -845,21 +845,21 @@ namespace KSP_PostProcessing.Parsers
                             else
                             {
                                 Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                                dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                                path = "KS3P/Textures/Fallback.png";
+                                dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback", false);
+                                path = "KS3P/Textures/Fallback";
                             }
                         }
                         else
                         {
-                            dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                            path = "KS3P/Textures/Fallback.png";
+                            dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                            path = "KS3P/Textures/Fallback";
                         }
                     }
                     else
                     {
                         dirtSettings.intensity = 0f; // disable
-                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                        path = "KS3P/Textures/Fallback.png";
+                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                        path = "KS3P/Textures/Fallback";
                     }
                 }
                 else
@@ -886,14 +886,14 @@ namespace KSP_PostProcessing.Parsers
                         else
                         {
                             Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                            dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                            path = "KS3P/Textures/Fallback.png";
+                            dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback", false);
+                            path = "KS3P/Textures/Fallback";
                         }
                     }
                     else
                     {
-                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                        path = "KS3P/Textures/Fallback.png";
+                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                        path = "KS3P/Textures/Fallback";
                     }
                 }
             }
@@ -921,14 +921,14 @@ namespace KSP_PostProcessing.Parsers
                     else
                     {
                         Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                        dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                        path = "KS3P/Textures/Fallback.png";
+                        dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback", false);
+                        path = "KS3P/Textures/Fallback";
                     }
                 }
                 else
                 {
-                    dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
 
@@ -1503,14 +1503,14 @@ namespace KSP_PostProcessing.Parsers
                 else
                 {
                     Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                    settings.lut = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    settings.lut = database.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
             else
             {
-                settings.lut = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                path = "KS3P/Textures/Fallback.png";
+                settings.lut = database.GetTexture("KS3P/Textures/Fallback", false);
+                path = "KS3P/Textures/Fallback";
             }
             
             if(data[2] == null || !bool.TryParse(data[2], out enabled))
@@ -1578,14 +1578,14 @@ namespace KSP_PostProcessing.Parsers
                 else
                 {
                     Warning("Failed to load spectral texture path [" + data[1] + "], loading blank fallback texture.");
-                    settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
             else
             {
-                settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                path = "KS3P/Textures/Fallback.png";
+                settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback", false);
+                path = "KS3P/Textures/Fallback";
             }
 
             if (data[2] == null || !bool.TryParse(data[2], out enabled))
@@ -1739,14 +1739,14 @@ namespace KSP_PostProcessing.Parsers
                 else
                 {
                     Warning("Failed to load mask texture path [" + data[3] + "], loading blank fallback texture.");
-                    settings.mask = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    settings.mask = database.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
             else
             {
-                settings.mask = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                path = "KS3P/Textures/Fallback.png";
+                settings.mask = database.GetTexture("KS3P/Textures/Fallback", false);
+                path = "KS3P/Textures/Fallback";
             }
             if(data[4] != null)
             {

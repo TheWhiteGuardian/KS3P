@@ -13,7 +13,7 @@ namespace KSP_PostProcessing.Parsers
     {
         protected void Warning(string message)
         {
-            KS3P.Error("[" + nameof(T) + "]: message");
+            KS3P.Error("[" + nameof(T) + "]: " + message);
         }
         protected void Exception(string message, Exception exception)
         {
@@ -166,13 +166,12 @@ namespace KSP_PostProcessing.Parsers
             if(node == null)
             {
                 curve = null;
-                return false;
             }
             else
             {
                 curve = ParseCurve(node);
-                return true;
             }
+            return (curve != null);
         }
 
         protected ColorGradingCurve ParseCurve(ConfigNode node)
@@ -201,7 +200,13 @@ namespace KSP_PostProcessing.Parsers
                     }
                 }
             }
-            return new ColorGradingCurve(curve, zero, loop, curve.GetBounds());
+
+            Vector2 cBounds = curve.GetBounds();
+            if (cBounds.IsZero()) {
+                return null;
+            } else {
+                return new ColorGradingCurve(curve, zero, loop, cBounds);
+            }
         }
 
         internal abstract void ToFile(List<string> lines, T item);
@@ -249,7 +254,7 @@ namespace KSP_PostProcessing.Parsers
             }
             catch (Exception e)
             {
-                KS3P.Exception("Exception caught parsing enumerator [" + nameof(E) + "]", e);
+                //KS3P.Exception("Exception caught parsing enumerator [" + nameof(E) + "]", e);
                 parsed = default(E);
                 return false;
             }

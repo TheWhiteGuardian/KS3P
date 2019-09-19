@@ -238,7 +238,14 @@ namespace KSP_PostProcessing
         internal static Vector2 GetBounds(this AnimationCurve curve)
         {
             var frames = curve.keys;
-            return new Vector2(frames[0].time, frames[frames.Length - 1].time);
+            if (frames.Length == 0)
+            {
+                return Vector2.zero;
+            }
+            else
+            {
+                return new Vector2(frames[0].time, frames[frames.Length - 1].time);
+            }
         }
     }
 }

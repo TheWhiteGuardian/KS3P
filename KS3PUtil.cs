@@ -16,7 +16,7 @@ namespace KSP_PostProcessing
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        internal static string Prepare(string s) => s.Replace("_", string.Empty).ToLower();
+        internal static string Prepare(string s) => s.Replace("_", string.Empty).ToLower().Trim();
         internal static bool Contains<T>(this T[] array, T item)
         {
             for(int x = 0; x < array.Length; x++)

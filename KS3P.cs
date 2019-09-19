@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace KSP_PostProcessing
             Debug.LogError("[KS3P]: " + input);
             log.Add("[Err]" + input);
         }
-        internal static void Error(string input) { Debug.Log("[KS3P]: " + input); }
+        internal static void Error(string input) { Debug.LogError("[KS3P]: " + input); }
         internal static void Exception(string message, Exception e, ref List<string> log)
         {
             Debug.LogException(e);
@@ -39,7 +40,7 @@ namespace KSP_PostProcessing
             Debug.Log("[KS3P]: " + input);
             log.Add("[Log]: " + input);
         }
-        internal static void Log(string input) { Debug.LogWarning("[KS3P]: " + input); }
+        internal static void Log(string input) { Debug.Log("[KS3P]: " + input); }
         #endregion
 
         // for making spawning the GUI customizable
@@ -121,8 +122,18 @@ namespace KSP_PostProcessing
         // Updates the core in response to a scene change.
         internal static void Register(PostProcessingBehaviour target, Scene targetScene)
         {
+            IEnumerable<Profile> sceneProfiles = loadedProfiles.Where(selectedprofile => selectedprofile.scenes[(int)targetScene]);
+            if (sceneProfiles.Count() > 0)
+            {
+                target.profile = sceneProfiles.First().profile;
+                KS3P.Log("Switch to profile \"" + sceneProfiles.First().ProfileName + "\"");
+            }
+            else
+            {
+                target.profile = loadedProfiles[targetScenes[(int)targetScene]].profile;
+                KS3P.Log("Switch to profile \"" + loadedProfiles[targetScenes[(int)targetScene]].ProfileName + "\"");
+            }
             cam = target;
-            target.profile = loadedProfiles[targetScenes[(int)targetScene]].profile;
         }
 
         // Registers a new texture references (so the GUI can manage and/or assign them)
@@ -502,11 +513,18 @@ namespace KSP_PostProcessing
         // with the mod properly prepared, we can now start loading data.
         void Start()
         {
+            StartCoroutine(LoadProfilesAndTextures());
+        }
+
+        IEnumerator LoadProfilesAndTextures()
+        {
             // cached signleton grab for performance
             GameDatabase database = GameDatabase.Instance;
 
+            yield return new WaitUntil(() => database.IsReady() == true);
+
             // the texture KS3P will resort to if none can be loaded.
-            string fallbackpath = "KS3P/Textures/Fallback.png";
+            string fallbackpath = "KS3P/Textures/Fallback";
             Texture2D fallbacktex = database.GetTexture(fallbackpath, false);
 
             // register the fallback tex to be eligible for all texture types.
@@ -529,8 +547,10 @@ namespace KSP_PostProcessing
                 {
                     profilenodes.Add(node);
                 }
+
+                KS3P.Log("Loading textures");
                 // properly register all loaded textures
-                foreach(ConfigNode node in cfg.config.GetNodes("Textures"))
+                foreach (ConfigNode node in cfg.config.GetNodes("Textures"))
                 {
                     foreach(string value in node.GetValues("dirtTex"))
                     {
@@ -549,13 +569,16 @@ namespace KSP_PostProcessing
                         loadedTextures.Add(new TextureReference(database.GetTexture(value, false), value, TexType.Lut));
                     }
                 }
+                KS3P.Log("Textures loaded");
             }
 
+            KS3P.Log("Loading profiles");
             // second config pass
             foreach (var profilenode in profilenodes)
             {
                 loadedProfiles.Add(profilenode);
             }
+            KS3P.Log("Profiles loaded");
 
             // default initialization
             GuiEnabled = false;

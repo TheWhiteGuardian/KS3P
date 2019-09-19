@@ -252,7 +252,7 @@ namespace KSP_PostProcessing.Parsers
                 parsed = (E)Enum.Parse(typeof(E), enumString);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //KS3P.Exception("Exception caught parsing enumerator [" + nameof(E) + "]", e);
                 parsed = default(E);

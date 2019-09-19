@@ -119,7 +119,7 @@ namespace KSP_PostProcessing
                     }
                     else
                     {
-                        KS3P.Warning("Adding shader [" + shader.name + "].", ref log);
+                        KS3P.Log("Adding shader [" + shader.name + "].", ref log);
                         shaderDictionary.Add(shader.name, shader);
                     }
                 }

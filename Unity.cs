@@ -4570,12 +4570,7 @@ namespace KSP_PostProcessing
 
         public bool isHdr
         {
-            // No UNITY_5_6_OR_NEWER defined in early betas of 5.6
-#if UNITY_5_6 || UNITY_5_6_OR_NEWER
             get { return camera.allowHDR; }
-#else
-            get { return camera.hdr; }
-#endif
         }
 
         public int width

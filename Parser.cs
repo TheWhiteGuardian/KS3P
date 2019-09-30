@@ -134,29 +134,17 @@ namespace KSP_PostProcessing.Parsers
                 float[] data = { 0f, 0f, 0f, 1f };
                 char[] separator = { ',' };
 
-                string[] snippets = target.Split(separator, 3);
+                string[] snippets = target.TrimRGBA().Split(separator, 4);
                 float parsed = 0f;
 
-                if (target.StartsWith("RGBA"))
+                for (int i = 0; i < snippets.Length; i++)
                 {
-                    for (int i = 0; i < snippets.Length; i++)
+                    if (float.TryParse(snippets[i], out parsed))
                     {
-                        if (float.TryParse(snippets[i], out parsed))
-                        {
-                            data[i] = parsed / 255f;
-                        }
+                        data[i] = parsed;
                     }
                 }
-                else
-                {
-                    for (int i = 0; i < snippets.Length; i++)
-                    {
-                        if (float.TryParse(snippets[i], out parsed))
-                        {
-                            data[i] = parsed;
-                        }
-                    }
-                }
+
                 return new Color(data[0], data[1], data[2], data[3]);
             }
         }

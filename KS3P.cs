@@ -876,8 +876,8 @@ namespace KSP_PostProcessing
                     bloom.softKnee = FloatValue("b_sk", GetValue(3f));
 
                     Text("Radius", GetLabel(4f));
-                    bloom.radius = FloatSlider(bloom.radius, "b_r", GetField(4f), 1f, 7f);
-                    bloom.radius = FloatValue("b_r", GetValue(4f), 1f, 7f);
+                    bloom.radius = FloatSlider(bloom.radius, "b_r", GetField(4f), 0.75f, 7f);
+                    bloom.radius = FloatValue("b_r", GetValue(4f), 0.75f, 7f);
 
                     bloom.antiFlicker = CachedBoolField(bloom.antiFlicker, GetRect(5f), "b_af", "Anti Flicker");
 

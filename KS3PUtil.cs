@@ -101,11 +101,11 @@ namespace KSP_PostProcessing
 
         internal static string TrimRGBA(this string s)
         {
-            char[] separator = { '(' };
-            string[] parts = s.Split(separator);
-            separator = new char[1] { ')' };
-            parts = parts[1].Split(separator);
-            return parts[0];
+            if(s.TrimStart(' ').ToLower().StartsWith("rgba"))
+            {
+                return s.TrimStart(' ').Remove(0, 4).TrimStart(' ', '(').TrimEnd(' ', ')');
+            }
+            return s;
         }
 
         internal static bool TryParseKeyframe(string input, out Keyframe output)

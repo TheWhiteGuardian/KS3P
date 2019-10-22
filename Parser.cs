@@ -1,7 +1,7 @@
 ﻿using System;
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace KSP_PostProcessing.Parsers
 {
@@ -107,7 +107,7 @@ namespace KSP_PostProcessing.Parsers
             float[] data = { 0f, 0f, 0f };
             char[] separator = { ',' };
 
-            string[] snippets = target.Split(separator, 3);
+            string[] snippets = target.TrimStart(' ', '(').TrimEnd(' ', ')').Split(separator, 3);
             float parsed = 0f;
             for(int i = 0; i < snippets.Length; i++)
             {
@@ -1423,11 +1423,11 @@ namespace KSP_PostProcessing.Parsers
 
             lines.AddIndented("tonemapper", mapSettings.tonemapper, mapDef.tonemapper);
             lines.AddIndented("black_in", mapSettings.neutralBlackIn, mapDef.neutralBlackIn);
-            lines.AddIndented("black_out", mapSettings.neutralBlackOut, mapDef.neutralBlackOut);
-            lines.AddIndented("white_clip", mapSettings.neutralWhiteClip, mapDef.neutralWhiteClip);
             lines.AddIndented("white_in", mapSettings.neutralWhiteIn, mapDef.neutralWhiteIn);
-            lines.AddIndented("white_level", mapSettings.neutralWhiteLevel, mapDef.neutralWhiteLevel);
+            lines.AddIndented("black_out", mapSettings.neutralBlackOut, mapDef.neutralBlackOut);
             lines.AddIndented("white_out", mapSettings.neutralWhiteOut, mapDef.neutralWhiteOut);
+            lines.AddIndented("white_level", mapSettings.neutralWhiteLevel, mapDef.neutralWhiteLevel);
+            lines.AddIndented("white_clip", mapSettings.neutralWhiteClip, mapDef.neutralWhiteClip);
 
             lines.AddIndented(false);
             #endregion
@@ -1655,7 +1655,7 @@ namespace KSP_PostProcessing.Parsers
 
         internal override void ToFile(List<string> lines, GrainModel item)
         {
-            lines.AddIndented("Grain_Model");
+            lines.AddIndented("Grain");
             lines.AddIndented(true);
 
             var settings = item.settings;

@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
 using System.Linq;
 using System.IO;
+using UnityEngine;
 
 namespace KSP_PostProcessing
 {
@@ -266,7 +266,7 @@ namespace KSP_PostProcessing
         /// <summary>
         /// The GUI window's size.
         /// </summary>
-        internal Rect rect = new Rect(0f, 0f, 300f, 500f);
+        internal Rect rect = new Rect(10f, 60f, 300f, 500f);
 
         /// <summary>
         /// The cached value of most GUI items
@@ -718,8 +718,8 @@ namespace KSP_PostProcessing
 
                 #region EditProfileSettings
                 case EditorWindowStatus.ProfileSettingsEditor:
-                    loadedProfiles[currentProfile].AuthorName = NamedStringField(loadedProfiles[currentProfile].AuthorName, 0f, "Name");
-                    loadedProfiles[currentProfile].ProfileName = NamedStringField(loadedProfiles[currentProfile].ProfileName, 1f, "Author");
+                    loadedProfiles[currentProfile].AuthorName = NamedStringField(loadedProfiles[currentProfile].AuthorName, 0f, "Author");
+                    loadedProfiles[currentProfile].ProfileName = NamedStringField(loadedProfiles[currentProfile].ProfileName, 1f, "Name");
 
                     for (int i = 0; i < 9; i++)
                     {
@@ -1119,8 +1119,8 @@ namespace KSP_PostProcessing
                     }
 
                     DrawFloatSlider("Red", ref channelvalues.x, "cg_mix_r", 1f, -2f, 2f);
-                    DrawFloatSlider("Red", ref channelvalues.y, "cg_mix_g", 2f, -2f, 2f);
-                    DrawFloatSlider("Red", ref channelvalues.z, "cg_mix_b", 3f, -2f, 2f);
+                    DrawFloatSlider("Green", ref channelvalues.y, "cg_mix_g", 2f, -2f, 2f);
+                    DrawFloatSlider("Blue", ref channelvalues.z, "cg_mix_b", 3f, -2f, 2f);
 
                     switch (channel)
                     {

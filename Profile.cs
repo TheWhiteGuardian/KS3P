@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.IO;
-using KSP_PostProcessing.Parsers;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
+using UnityEngine;
+using KSP_PostProcessing.Parsers;
 
 namespace KSP_PostProcessing
 {

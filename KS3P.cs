@@ -96,18 +96,24 @@ namespace KSP_PostProcessing
         }
 
         /// <summary>
+        /// The current status of the KS3P.
+        /// </summary>
+        static private bool KS3P_active = true;
+
+        /// <summary>
         /// KS3P enabled status
         /// <para>Get: returns the current status of KS3P: enabled or not?</para>
         /// <para>Set: either enables or disables KS3P depending on the value given.</para>
         /// </summary>
-        static bool KS3P_Enabled
+        internal static bool KS3P_Enabled
         {
-            get => (cam) ? cam.enabled : false;
+            get => KS3P_active;
             set
             {
                 if (cam)
                 {
                     cam.enabled = value;
+                    KS3P_active = value;
                 }
                 else
                 {
@@ -134,6 +140,7 @@ namespace KSP_PostProcessing
                 KS3P.Log("Switch to profile \"" + loadedProfiles[targetScenes[(int)targetScene]].ProfileName + "\"");
             }
             cam = target;
+            cam.enabled = KS3P_Enabled;
         }
 
         // Registers a new texture references (so the GUI can manage and/or assign them)

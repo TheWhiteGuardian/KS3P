@@ -4646,9 +4646,9 @@ namespace KSP_PostProcessing
         { }
     }
 
-    [ImageEffectAllowedInSceneView]
+    //[ImageEffectAllowedInSceneView]
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent, ExecuteInEditMode]
-    [AddComponentMenu("Effects/Post-Processing Behaviour", -1)]
+    //[AddComponentMenu("Effects/Post-Processing Behaviour", -1)]
     public class PostProcessingBehaviour : MonoBehaviour
     {
         // Inspector fields

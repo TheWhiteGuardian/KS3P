@@ -65,7 +65,7 @@ namespace KSP_PostProcessing
             string gpuString = SystemInfo.graphicsDeviceVersion;
 
             // check DX11
-
+#if !UNITY2019
             if(gpuString.Contains("Direct3D 11.0"))
             {
                 // inject dx11
@@ -73,6 +73,7 @@ namespace KSP_PostProcessing
                 path = Path.Combine(path, "postprocessingshaders-dx11");
             }
             else
+#endif
             {
                 // merge path but don't add dx11 targeting
                 path = Path.Combine(path, "postprocessingshaders");
@@ -119,7 +120,7 @@ namespace KSP_PostProcessing
                     }
                     else
                     {
-                        KS3P.Warning("Adding shader [" + shader.name + "].", ref log);
+                        KS3P.Log("Adding shader [" + shader.name + "].", ref log);
                         shaderDictionary.Add(shader.name, shader);
                     }
                 }

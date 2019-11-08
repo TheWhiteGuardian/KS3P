@@ -1,7 +1,7 @@
 ﻿using System;
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace KSP_PostProcessing.Parsers
 {
@@ -13,7 +13,7 @@ namespace KSP_PostProcessing.Parsers
     {
         protected void Warning(string message)
         {
-            KS3P.Error("[" + nameof(T) + "]: message");
+            KS3P.Error("[" + nameof(T) + "]: " + message);
         }
         protected void Exception(string message, Exception exception)
         {
@@ -107,7 +107,7 @@ namespace KSP_PostProcessing.Parsers
             float[] data = { 0f, 0f, 0f };
             char[] separator = { ',' };
 
-            string[] snippets = target.Split(separator, 3);
+            string[] snippets = target.TrimStart(' ', '(').TrimEnd(' ', ')').Split(separator, 3);
             float parsed = 0f;
             for(int i = 0; i < snippets.Length; i++)
             {
@@ -134,29 +134,17 @@ namespace KSP_PostProcessing.Parsers
                 float[] data = { 0f, 0f, 0f, 1f };
                 char[] separator = { ',' };
 
-                string[] snippets = target.Split(separator, 3);
+                string[] snippets = target.TrimRGBA().Split(separator, 4);
                 float parsed = 0f;
 
-                if (target.StartsWith("RGBA"))
+                for (int i = 0; i < snippets.Length; i++)
                 {
-                    for (int i = 0; i < snippets.Length; i++)
+                    if (float.TryParse(snippets[i], out parsed))
                     {
-                        if (float.TryParse(snippets[i], out parsed))
-                        {
-                            data[i] = parsed / 255f;
-                        }
+                        data[i] = parsed;
                     }
                 }
-                else
-                {
-                    for (int i = 0; i < snippets.Length; i++)
-                    {
-                        if (float.TryParse(snippets[i], out parsed))
-                        {
-                            data[i] = parsed;
-                        }
-                    }
-                }
+
                 return new Color(data[0], data[1], data[2], data[3]);
             }
         }
@@ -166,13 +154,12 @@ namespace KSP_PostProcessing.Parsers
             if(node == null)
             {
                 curve = null;
-                return false;
             }
             else
             {
                 curve = ParseCurve(node);
-                return true;
             }
+            return (curve != null);
         }
 
         protected ColorGradingCurve ParseCurve(ConfigNode node)
@@ -201,7 +188,13 @@ namespace KSP_PostProcessing.Parsers
                     }
                 }
             }
-            return new ColorGradingCurve(curve, zero, loop, curve.GetBounds());
+
+            Vector2 cBounds = curve.GetBounds();
+            if (cBounds.IsZero()) {
+                return null;
+            } else {
+                return new ColorGradingCurve(curve, zero, loop, cBounds);
+            }
         }
 
         internal abstract void ToFile(List<string> lines, T item);
@@ -247,9 +240,9 @@ namespace KSP_PostProcessing.Parsers
                 parsed = (E)Enum.Parse(typeof(E), enumString);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                KS3P.Exception("Exception caught parsing enumerator [" + nameof(E) + "]", e);
+                //KS3P.Exception("Exception caught parsing enumerator [" + nameof(E) + "]", e);
                 parsed = default(E);
                 return false;
             }
@@ -840,21 +833,21 @@ namespace KSP_PostProcessing.Parsers
                             else
                             {
                                 Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                                dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                                path = "KS3P/Textures/Fallback.png";
+                                dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback", false);
+                                path = "KS3P/Textures/Fallback";
                             }
                         }
                         else
                         {
-                            dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                            path = "KS3P/Textures/Fallback.png";
+                            dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                            path = "KS3P/Textures/Fallback";
                         }
                     }
                     else
                     {
                         dirtSettings.intensity = 0f; // disable
-                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                        path = "KS3P/Textures/Fallback.png";
+                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                        path = "KS3P/Textures/Fallback";
                     }
                 }
                 else
@@ -881,14 +874,14 @@ namespace KSP_PostProcessing.Parsers
                         else
                         {
                             Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                            dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                            path = "KS3P/Textures/Fallback.png";
+                            dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback", false);
+                            path = "KS3P/Textures/Fallback";
                         }
                     }
                     else
                     {
-                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                        path = "KS3P/Textures/Fallback.png";
+                        dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                        path = "KS3P/Textures/Fallback";
                     }
                 }
             }
@@ -916,14 +909,14 @@ namespace KSP_PostProcessing.Parsers
                     else
                     {
                         Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                        dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                        path = "KS3P/Textures/Fallback.png";
+                        dirtSettings.texture = database.GetTexture("KS3P/Textures/Fallback", false);
+                        path = "KS3P/Textures/Fallback";
                     }
                 }
                 else
                 {
-                    dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    dirtSettings.texture = GameDatabase.Instance.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
 
@@ -1430,11 +1423,11 @@ namespace KSP_PostProcessing.Parsers
 
             lines.AddIndented("tonemapper", mapSettings.tonemapper, mapDef.tonemapper);
             lines.AddIndented("black_in", mapSettings.neutralBlackIn, mapDef.neutralBlackIn);
-            lines.AddIndented("black_out", mapSettings.neutralBlackOut, mapDef.neutralBlackOut);
-            lines.AddIndented("white_clip", mapSettings.neutralWhiteClip, mapDef.neutralWhiteClip);
             lines.AddIndented("white_in", mapSettings.neutralWhiteIn, mapDef.neutralWhiteIn);
-            lines.AddIndented("white_level", mapSettings.neutralWhiteLevel, mapDef.neutralWhiteLevel);
+            lines.AddIndented("black_out", mapSettings.neutralBlackOut, mapDef.neutralBlackOut);
             lines.AddIndented("white_out", mapSettings.neutralWhiteOut, mapDef.neutralWhiteOut);
+            lines.AddIndented("white_level", mapSettings.neutralWhiteLevel, mapDef.neutralWhiteLevel);
+            lines.AddIndented("white_clip", mapSettings.neutralWhiteClip, mapDef.neutralWhiteClip);
 
             lines.AddIndented(false);
             #endregion
@@ -1498,14 +1491,14 @@ namespace KSP_PostProcessing.Parsers
                 else
                 {
                     Warning("Failed to load dirt texture path [" + data[1] + "], loading blank fallback texture.");
-                    settings.lut = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    settings.lut = database.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
             else
             {
-                settings.lut = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                path = "KS3P/Textures/Fallback.png";
+                settings.lut = database.GetTexture("KS3P/Textures/Fallback", false);
+                path = "KS3P/Textures/Fallback";
             }
             
             if(data[2] == null || !bool.TryParse(data[2], out enabled))
@@ -1573,14 +1566,14 @@ namespace KSP_PostProcessing.Parsers
                 else
                 {
                     Warning("Failed to load spectral texture path [" + data[1] + "], loading blank fallback texture.");
-                    settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
             else
             {
-                settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                path = "KS3P/Textures/Fallback.png";
+                settings.spectralTexture = database.GetTexture("KS3P/Textures/Fallback", false);
+                path = "KS3P/Textures/Fallback";
             }
 
             if (data[2] == null || !bool.TryParse(data[2], out enabled))
@@ -1662,7 +1655,7 @@ namespace KSP_PostProcessing.Parsers
 
         internal override void ToFile(List<string> lines, GrainModel item)
         {
-            lines.AddIndented("Grain_Model");
+            lines.AddIndented("Grain");
             lines.AddIndented(true);
 
             var settings = item.settings;
@@ -1734,14 +1727,14 @@ namespace KSP_PostProcessing.Parsers
                 else
                 {
                     Warning("Failed to load mask texture path [" + data[3] + "], loading blank fallback texture.");
-                    settings.mask = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                    path = "KS3P/Textures/Fallback.png";
+                    settings.mask = database.GetTexture("KS3P/Textures/Fallback", false);
+                    path = "KS3P/Textures/Fallback";
                 }
             }
             else
             {
-                settings.mask = database.GetTexture("KS3P/Textures/Fallback.png", false);
-                path = "KS3P/Textures/Fallback.png";
+                settings.mask = database.GetTexture("KS3P/Textures/Fallback", false);
+                path = "KS3P/Textures/Fallback";
             }
             if(data[4] != null)
             {

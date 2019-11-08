@@ -16,7 +16,7 @@ namespace KSP_PostProcessing
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        internal static string Prepare(string s) => s.Replace("_", string.Empty).ToLower();
+        internal static string Prepare(string s) => s.Replace("_", string.Empty).ToLower().Trim();
         internal static bool Contains<T>(this T[] array, T item)
         {
             for(int x = 0; x < array.Length; x++)
@@ -101,11 +101,11 @@ namespace KSP_PostProcessing
 
         internal static string TrimRGBA(this string s)
         {
-            char[] separator = { '(' };
-            string[] parts = s.Split(separator);
-            separator = new char[1] { ')' };
-            parts = parts[1].Split(separator);
-            return parts[0];
+            if(s.TrimStart(' ').ToLower().StartsWith("rgba"))
+            {
+                return s.TrimStart(' ').Remove(0, 4).TrimStart(' ', '(').TrimEnd(' ', ')');
+            }
+            return s;
         }
 
         internal static bool TryParseKeyframe(string input, out Keyframe output)
@@ -238,7 +238,14 @@ namespace KSP_PostProcessing
         internal static Vector2 GetBounds(this AnimationCurve curve)
         {
             var frames = curve.keys;
-            return new Vector2(frames[0].time, frames[frames.Length - 1].time);
+            if (frames.Length == 0)
+            {
+                return Vector2.zero;
+            }
+            else
+            {
+                return new Vector2(frames[0].time, frames[frames.Length - 1].time);
+            }
         }
     }
 }

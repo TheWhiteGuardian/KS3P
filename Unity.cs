@@ -2229,9 +2229,7 @@ namespace KSP_PostProcessing
                     : GetPerspectiveProjectionMatrix(jitter);
             }
 
-#if UNITY_5_5_OR_NEWER
             context.camera.useJitteredProjectionMatrixForTransparentRendering = false;
-#endif
 
             jitter.x /= context.width;
             jitter.y /= context.height;
@@ -2299,9 +2297,13 @@ namespace KSP_PostProcessing
 
         Vector2 GenerateRandomOffset()
         {
+            // from v2:
+            // The variance between 0 and the actual halton sequence values reveals noticeable instability
+            // in Unity's shadow maps, so we avoid index 0.
             var offset = new Vector2(
-                    GetHaltonValue(m_SampleIndex & 1023, 2),
-                    GetHaltonValue(m_SampleIndex & 1023, 3));
+                    GetHaltonValue((m_SampleIndex & 1023) + 1, 2) - 0.5f,
+                    GetHaltonValue((m_SampleIndex & 1023) + 1, 3) - 0.5f
+                );
 
             if (++m_SampleIndex >= k_SampleCount)
                 m_SampleIndex = 0;
@@ -4570,12 +4572,7 @@ namespace KSP_PostProcessing
 
         public bool isHdr
         {
-            // No UNITY_5_6_OR_NEWER defined in early betas of 5.6
-#if UNITY_5_6 || UNITY_5_6_OR_NEWER
             get { return camera.allowHDR; }
-#else
-            get { return camera.hdr; }
-#endif
         }
 
         public int width
@@ -4649,11 +4646,9 @@ namespace KSP_PostProcessing
         { }
     }
 
-#if UNITY_5_4_OR_NEWER
-    [ImageEffectAllowedInSceneView]
-#endif
+    //[ImageEffectAllowedInSceneView]
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent, ExecuteInEditMode]
-    [AddComponentMenu("Effects/Post-Processing Behaviour", -1)]
+    //[AddComponentMenu("Effects/Post-Processing Behaviour", -1)]
     public class PostProcessingBehaviour : MonoBehaviour
     {
         // Inspector fields

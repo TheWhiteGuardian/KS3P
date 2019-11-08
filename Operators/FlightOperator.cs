@@ -5,22 +5,29 @@ namespace KSP_PostProcessing.Operators
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class FlightOperator : MonoBehaviour
     {
-        byte state = 0;
-        // 0 = flight
-        // 1 = EVA
-        // 2 = IVA
-        // 3 = Map
-        
+        enum State
+        {
+            Flight,
+            EVA,
+            IVA,
+            Map,
+            Initial
+        }
+
+        State activeState = State.Initial;
+
         private void Start()
         {
             mainCam = Camera.main.gameObject.AddOrGetComponent<PostProcessingBehaviour>();
-            scaledCam = GameObject.Find("Camera ScaledSpace").AddOrGetComponent<PostProcessingBehaviour>(); ;
-            ivaCam = InternalCamera.Instance;
+            scaledCam = ScaledCamera.Instance.gameObject.AddOrGetComponent<PostProcessingBehaviour>();
+            ivaCamInstance = InternalCamera.Instance;
+            ivaCam = ivaCamInstance.gameObject.AddOrGetComponent<PostProcessingBehaviour>();
         }
 
         PostProcessingBehaviour mainCam;
         PostProcessingBehaviour scaledCam;
-        InternalCamera ivaCam;
+        PostProcessingBehaviour ivaCam;
+        InternalCamera ivaCamInstance;
 
         private void Update()
         {
@@ -28,40 +35,43 @@ namespace KSP_PostProcessing.Operators
             {
                 return;
             }
-            if(MapView.MapIsEnabled)
+            if (MapView.MapIsEnabled)
             {
-                if(state != 3)
+                if (activeState != State.Map)
                 {
-                    KS3P.Register(scaledCam, KS3P.Scene.MapView);
                     KS3P.currentScene = KS3P.Scene.MapView;
-                    state = 3;
+                    KS3P.Register(scaledCam, KS3P.Scene.MapView);
+                    activeState = State.Map;
                 }
             }
-            else if(ivaCam.isActive)
+            else if (ivaCamInstance.isActive)
             {
-                if(state != 2)
+                if (activeState != State.IVA)
                 {
-                    KS3P.Register(mainCam, KS3P.Scene.IVA);
+                    scaledCam.enabled = false;
                     KS3P.currentScene = KS3P.Scene.IVA;
-                    state = 2;
+                    KS3P.Register(ivaCam, KS3P.Scene.IVA);
+                    activeState = State.IVA;
                 }
             }
-            else if(FlightGlobals.ActiveVessel.isEVA)
+            else if (FlightGlobals.ActiveVessel.isEVA)
             {
-                if(state != 1)
+                if (activeState != State.EVA)
                 {
-                    KS3P.Register(mainCam, KS3P.Scene.EVA);
+                    scaledCam.enabled = false;
                     KS3P.currentScene = KS3P.Scene.EVA;
-                    state = 1;
+                    KS3P.Register(mainCam, KS3P.Scene.EVA);
+                    activeState = State.EVA;
                 }
             }
             else
             {
-                if(state != 0)
+                if (activeState != State.Flight)
                 {
-                    KS3P.Register(mainCam, KS3P.Scene.Flight);
+                    scaledCam.enabled = false;
                     KS3P.currentScene = KS3P.Scene.Flight;
-                    state = 0;
+                    KS3P.Register(mainCam, KS3P.Scene.Flight);
+                    activeState = State.Flight;
                 }
             }
         }

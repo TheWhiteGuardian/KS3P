@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using UnityEngine;
 
 namespace KSP_PostProcessing
 {
@@ -17,7 +18,7 @@ namespace KSP_PostProcessing
             Debug.LogError("[KS3P]: " + input);
             log.Add("[Err]" + input);
         }
-        internal static void Error(string input) { Debug.Log("[KS3P]: " + input); }
+        internal static void Error(string input) { Debug.LogError("[KS3P]: " + input); }
         internal static void Exception(string message, Exception e, ref List<string> log)
         {
             Debug.LogException(e);
@@ -39,7 +40,7 @@ namespace KSP_PostProcessing
             Debug.Log("[KS3P]: " + input);
             log.Add("[Log]: " + input);
         }
-        internal static void Log(string input) { Debug.LogWarning("[KS3P]: " + input); }
+        internal static void Log(string input) { Debug.Log("[KS3P]: " + input); }
         #endregion
 
         // for making spawning the GUI customizable
@@ -95,18 +96,24 @@ namespace KSP_PostProcessing
         }
 
         /// <summary>
+        /// The current status of the KS3P.
+        /// </summary>
+        static private bool KS3P_active = true;
+
+        /// <summary>
         /// KS3P enabled status
         /// <para>Get: returns the current status of KS3P: enabled or not?</para>
         /// <para>Set: either enables or disables KS3P depending on the value given.</para>
         /// </summary>
-        static bool KS3P_Enabled
+        internal static bool KS3P_Enabled
         {
-            get => (cam) ? cam.enabled : false;
+            get => KS3P_active;
             set
             {
                 if (cam)
                 {
                     cam.enabled = value;
+                    KS3P_active = value;
                 }
                 else
                 {
@@ -121,8 +128,19 @@ namespace KSP_PostProcessing
         // Updates the core in response to a scene change.
         internal static void Register(PostProcessingBehaviour target, Scene targetScene)
         {
+            IEnumerable<Profile> sceneProfiles = loadedProfiles.Where(selectedprofile => selectedprofile.scenes[(int)targetScene]);
+            if (sceneProfiles.Count() > 0)
+            {
+                target.profile = sceneProfiles.First().profile;
+                KS3P.Log("Switch to profile \"" + sceneProfiles.First().ProfileName + "\"");
+            }
+            else
+            {
+                target.profile = loadedProfiles[targetScenes[(int)targetScene]].profile;
+                KS3P.Log("Switch to profile \"" + loadedProfiles[targetScenes[(int)targetScene]].ProfileName + "\"");
+            }
             cam = target;
-            target.profile = loadedProfiles[targetScenes[(int)targetScene]].profile;
+            cam.enabled = KS3P_Enabled;
         }
 
         // Registers a new texture references (so the GUI can manage and/or assign them)
@@ -255,7 +273,7 @@ namespace KSP_PostProcessing
         /// <summary>
         /// The GUI window's size.
         /// </summary>
-        internal Rect rect = new Rect(0f, 0f, 300f, 500f);
+        internal Rect rect = new Rect(10f, 60f, 300f, 500f);
 
         /// <summary>
         /// The cached value of most GUI items
@@ -502,11 +520,18 @@ namespace KSP_PostProcessing
         // with the mod properly prepared, we can now start loading data.
         void Start()
         {
+            StartCoroutine(LoadProfilesAndTextures());
+        }
+
+        IEnumerator LoadProfilesAndTextures()
+        {
             // cached signleton grab for performance
             GameDatabase database = GameDatabase.Instance;
 
+            yield return new WaitUntil(() => database.IsReady() == true);
+
             // the texture KS3P will resort to if none can be loaded.
-            string fallbackpath = "KS3P/Textures/Fallback.png";
+            string fallbackpath = "KS3P/Textures/Fallback";
             Texture2D fallbacktex = database.GetTexture(fallbackpath, false);
 
             // register the fallback tex to be eligible for all texture types.
@@ -529,8 +554,10 @@ namespace KSP_PostProcessing
                 {
                     profilenodes.Add(node);
                 }
+
+                KS3P.Log("Loading textures");
                 // properly register all loaded textures
-                foreach(ConfigNode node in cfg.config.GetNodes("Textures"))
+                foreach (ConfigNode node in cfg.config.GetNodes("Textures"))
                 {
                     foreach(string value in node.GetValues("dirtTex"))
                     {
@@ -549,13 +576,16 @@ namespace KSP_PostProcessing
                         loadedTextures.Add(new TextureReference(database.GetTexture(value, false), value, TexType.Lut));
                     }
                 }
+                KS3P.Log("Textures loaded");
             }
 
+            KS3P.Log("Loading profiles");
             // second config pass
             foreach (var profilenode in profilenodes)
             {
                 loadedProfiles.Add(profilenode);
             }
+            KS3P.Log("Profiles loaded");
 
             // default initialization
             GuiEnabled = false;
@@ -695,8 +725,8 @@ namespace KSP_PostProcessing
 
                 #region EditProfileSettings
                 case EditorWindowStatus.ProfileSettingsEditor:
-                    loadedProfiles[currentProfile].AuthorName = NamedStringField(loadedProfiles[currentProfile].AuthorName, 0f, "Name");
-                    loadedProfiles[currentProfile].ProfileName = NamedStringField(loadedProfiles[currentProfile].ProfileName, 1f, "Author");
+                    loadedProfiles[currentProfile].AuthorName = NamedStringField(loadedProfiles[currentProfile].AuthorName, 0f, "Author");
+                    loadedProfiles[currentProfile].ProfileName = NamedStringField(loadedProfiles[currentProfile].ProfileName, 1f, "Name");
 
                     for (int i = 0; i < 9; i++)
                     {
@@ -853,8 +883,8 @@ namespace KSP_PostProcessing
                     bloom.softKnee = FloatValue("b_sk", GetValue(3f));
 
                     Text("Radius", GetLabel(4f));
-                    bloom.radius = FloatSlider(bloom.radius, "b_r", GetField(4f), 1f, 7f);
-                    bloom.radius = FloatValue("b_r", GetValue(4f), 1f, 7f);
+                    bloom.radius = FloatSlider(bloom.radius, "b_r", GetField(4f), 0.75f, 7f);
+                    bloom.radius = FloatValue("b_r", GetValue(4f), 0.75f, 7f);
 
                     bloom.antiFlicker = CachedBoolField(bloom.antiFlicker, GetRect(5f), "b_af", "Anti Flicker");
 
@@ -1096,8 +1126,8 @@ namespace KSP_PostProcessing
                     }
 
                     DrawFloatSlider("Red", ref channelvalues.x, "cg_mix_r", 1f, -2f, 2f);
-                    DrawFloatSlider("Red", ref channelvalues.y, "cg_mix_g", 2f, -2f, 2f);
-                    DrawFloatSlider("Red", ref channelvalues.z, "cg_mix_b", 3f, -2f, 2f);
+                    DrawFloatSlider("Green", ref channelvalues.y, "cg_mix_g", 2f, -2f, 2f);
+                    DrawFloatSlider("Blue", ref channelvalues.z, "cg_mix_b", 3f, -2f, 2f);
 
                     switch (channel)
                     {
